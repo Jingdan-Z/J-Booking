@@ -31,3 +31,7 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Credential ###
+src/main/resources
+src/main/.DS_Store
