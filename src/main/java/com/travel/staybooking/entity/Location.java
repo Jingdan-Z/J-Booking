@@ -5,6 +5,9 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.GeoPointField;
 
+/***
+ * entity class of ES
+ */
 @Document(indexName = "loc")
 public class Location {
     private static final long serialVersionUID = 1L;

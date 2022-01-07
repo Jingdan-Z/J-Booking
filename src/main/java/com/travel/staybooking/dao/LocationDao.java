@@ -8,8 +8,9 @@ import java.util.List;
 /**
  *CRUDrepo => ES repo => location repo
  * lots we need to implement
+ * ES repo provides basic methods
  *
  */
 public interface LocationDao extends ElasticsearchRepository<Location,Long>, CustomLocationRepository{
-    List<Long> searchByDistance(double lat, double lon, String distance);
+
 }

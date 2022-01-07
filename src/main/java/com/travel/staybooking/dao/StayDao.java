@@ -8,4 +8,5 @@ import java.util.List;
 @Repository
 public interface StayDao extends JpaRepository<Stay, Long>{
     List<Stay> findByHost(User user);
+    List<Stay> findByIdInAndGuestNumberGreaterThanEqual(List<Long> ids, int guestNumber);
 }

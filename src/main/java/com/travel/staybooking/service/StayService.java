@@ -1,5 +1,7 @@
 package com.travel.staybooking.service;
 
+import com.travel.staybooking.dao.LocationDao;
+import com.travel.staybooking.exception.GeoEncodingException;
 import org.springframework.stereotype.Service;
 import com.travel.staybooking.dao.StayDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +22,15 @@ import org.springframework.web.multipart.MultipartFile;
 public class StayService {
     private StayDao stayRepository;
     private ImageStorageService imageStorageService;
+    private LocationDao locationRepository;
+    private GeoService geoService;
     @Autowired
-    public StayService(StayDao stayRepository, ImageStorageService imageStorageService) {
+    public StayService(StayDao stayRepository, ImageStorageService imageStorageService,LocationDao locationRepository, GeoService geoService ) {
         this.stayRepository = stayRepository;
         this.imageStorageService = imageStorageService;
+        this.geoService = geoService;
+        this.locationRepository = locationRepository;
+
     }
     public List<Stay> listByUser(String username) {
         return stayRepository.findByHost(new User.Builder().setUsername(username).build());
@@ -50,7 +57,13 @@ public class StayService {
         stay.setImages(stayImages);
 
         stayRepository.save(stay);
+        //save location to elastic search
+        Location location = geoService.getLatLng(stay.getId(), stay.getAddress());
+        locationRepository.save(location);
+
     }
+
+
 
 
     public void delete(Long stayId) {
