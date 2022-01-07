@@ -5,11 +5,13 @@ import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.GeoPointField;
 
+import java.io.Serializable;
+
 /***
  * entity class of ES
  */
 @Document(indexName = "loc")
-public class Location {
+public class Location implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Field(type = FieldType.Long)

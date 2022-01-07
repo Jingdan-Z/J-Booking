@@ -18,8 +18,8 @@ public class StayController {
         this.stayService = stayService;
     }
     @GetMapping(value = "/stays")
-    public List<Stay> listStays(@RequestParam(name = "host") String hostName) {
-        return stayService.listByUser(hostName);
+    public List<Stay> listStays(Principal principal) {
+        return stayService.listByUser(principal.getName());
     }
 
     @GetMapping(value = "/stays/{stayId}")
@@ -34,13 +34,13 @@ public class StayController {
             @RequestParam("description") String description,
             @RequestParam("host") String host,
             @RequestParam("guest_number") int guestNumber,
-            @RequestParam("images") MultipartFile[] images) {
+            @RequestParam("images") MultipartFile[] images, Principal principal) {
 
         Stay stay = new Stay.Builder().setName(name)
                 .setAddress(address)
                 .setDescription(description)
                 .setGuestNumber(guestNumber)
-                .setHost(new User.Builder().setUsername(host).build())
+                .setHost(new User.Builder().setUsername(principal.getName()).build())
                 .build();
         stayService.add(stay, images);
     }
