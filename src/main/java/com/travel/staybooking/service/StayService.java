@@ -1,7 +1,9 @@
 package com.travel.staybooking.service;
 
 import com.travel.staybooking.dao.LocationDao;
+import com.travel.staybooking.dao.ReservationDao;
 import com.travel.staybooking.exception.GeoEncodingException;
+import com.travel.staybooking.exception.StayDeleteException;
 import org.springframework.stereotype.Service;
 import com.travel.staybooking.dao.StayDao;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,20 +18,21 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import com.travel.staybooking.entity.User;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class StayService {
+    private ReservationDao reservationRepository;
     private StayDao stayRepository;
     private ImageStorageService imageStorageService;
     private LocationDao locationRepository;
     private GeoService geoService;
     @Autowired
-    public StayService(StayDao stayRepository, ImageStorageService imageStorageService,LocationDao locationRepository, GeoService geoService ) {
+    public StayService(StayDao stayRepository, ReservationDao reservationRepository, ImageStorageService imageStorageService, LocationDao locationRepository, GeoService geoService ) {
         this.stayRepository = stayRepository;
         this.imageStorageService = imageStorageService;
         this.geoService = geoService;
         this.locationRepository = locationRepository;
+        this.reservationRepository = reservationRepository;
 
     }
     public List<Stay> listByUser(String username) {
@@ -66,7 +69,12 @@ public class StayService {
 
 
 
-    public void delete(Long stayId) {
+    public void delete(Long stayId) throws StayDeleteException {
+        //check whether the saty has been reserved 
+        List<Reservation> reservations = reservationRepository.findByStayAndCheckoutDateAfter(new Stay.Builder().setId(stayId).build(), LocalDate.now());
+        if (reservations != null && reservations.size() > 0) {
+            throw new StayDeleteException("Cannot delete stay with active reservation");
+        }
         stayRepository.deleteById(stayId);
     }
 
